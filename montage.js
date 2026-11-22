@@ -283,12 +283,18 @@ function drawScoreboard() {
   drawing.textBaseline = 'top';
   drawing.font = 'bold 34px Arial';
   drawing.globalAlpha = 0.9;
-  for (const [align, text, x, colour] of [['right', String(score.red), middle - 30, '#ff3b3b'], ['left', String(score.blue), middle + 30, '#4d7cff']]) {
+  for (const [align, text, x, colour] of [['right', String(score.red), middle - 60, '#ff3b3b'], ['left', String(score.blue), middle + 60, '#4d7cff']]) {
     drawing.textAlign = align;
     drawing.strokeText(text, x, 24);
     drawing.fillStyle = colour;
     drawing.fillText(text, x, 24);
   }
+  // the game clock in the middle: time into the game, the same clock the caption quotes
+  const clock = formatTime(clip.raw.tag_ms - clip.raw.tag + currentMs);
+  drawing.textAlign = 'center';
+  drawing.strokeText(clock, middle, 24);
+  drawing.fillStyle = '#ffffff';
+  drawing.fillText(clock, middle, 24);
   drawing.globalAlpha = 1;
 }
 

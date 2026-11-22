@@ -396,6 +396,7 @@ async function start() {
   const kinds = [...new Set(data.clips.map(c => c.kind))];
   kindSelect.innerHTML = '<option value="all">All (' + data.clips.length + ')</option>' +
     kinds.map(k => '<option value="' + k + '">' + (k === 'drop' ? 'Drops' : 'Interceptions') + ' (' + data.clips.filter(c => c.kind === k).length + ')</option>').join('');
+  if (data.defaultKind && kinds.includes(data.defaultKind)) kindSelect.value = data.defaultKind;
   applyKindFilter();
   requestAnimationFrame(animate);
 }

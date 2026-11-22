@@ -116,6 +116,14 @@ function eggFlightPosition(ms) {
   return [x + vx * seconds, y + vy * seconds];
 }
 
+// time left until the game ends: the replay's clock events say how much was left, and it counts down steadily
+function timeLeftAt(ms) {
+  const list = clip.raw.clock;
+  const i = lastIndexAtOrBefore(list, ms, c => c[0]);
+  if (i < 0) return list.length ? list[0][2] : 0;
+  return Math.max(0, list[i][2] - (ms - list[i][0]));
+}
+
 function scoreAt(ms) {
   const list = clip.raw.scores;
   const i = lastIndexAtOrBefore(list, ms, s => s[0]);
@@ -289,8 +297,8 @@ function drawScoreboard() {
     drawing.fillStyle = colour;
     drawing.fillText(text, x, 24);
   }
-  // the game clock in the middle: time into the game, the same clock the caption quotes
-  const clock = formatTime(clip.raw.tag_ms - clip.raw.tag + currentMs);
+  // the game clock in the middle: time left until the game ends
+  const clock = formatTime(Math.ceil(timeLeftAt(currentMs) / 1000) * 1000);
   drawing.textAlign = 'center';
   drawing.strokeText(clock, middle, 24);
   drawing.fillStyle = '#ffffff';
@@ -315,7 +323,7 @@ function captionFor(raw, number, total) {
   const who = id => (id !== null && id !== undefined && clip.name[id]) || '?';
   const open = raw.open.map(who).join(', ');
   const words = KIND_WORDS[raw.kind];
-  return '#' + number + ' of ' + total + ' | ' + date + ' | game ' + raw.game.slice(0, 8) + ' | game clock ' + formatTime(raw.tag_ms) +
+  return '#' + number + ' of ' + total + ' | ' + date + ' | game ' + raw.game.slice(0, 8) + ' | time left ' + formatTime(Math.ceil(timeLeftAt(raw.tag) / 1000) * 1000) +
     ' | ' + who(raw.focus) + ' ' + words[0] + ' (' + words[1] + ' ' + who(raw.other) + ') | open teammates (green): ' + open;
 }
 
@@ -337,6 +345,14 @@ function showClip(index) {
 
 function clipLength() { return clip.raw.tag + 2000; }
 
+// the same as timeLeftAt but for a clip that is not the one being played (for the list)
+function timeLeftAtRaw(raw, ms) {
+  const list = raw.clock;
+  const i = lastIndexAtOrBefore(list, ms, c => c[0]);
+  if (i < 0) return list.length ? list[0][2] : 0;
+  return Math.max(0, list[i][2] - (ms - list[i][0]));
+}
+
 function fillList() {
   clipList.innerHTML = '';
   shownClips.forEach((raw, index) => {
@@ -344,7 +360,7 @@ function fillList() {
     li.dataset.index = String(index);
     const date = new Date(raw.at).toISOString().slice(0, 10);
     const name = (raw.players.find(p => String(p[0]) === String(raw.focus)) || [0, '?'])[1];
-    li.textContent = (index + 1) + '. ' + date + ' | ' + raw.kind + ' | ' + formatTime(raw.tag_ms) + ' | ' + raw.game.slice(0, 8);
+    li.textContent = (index + 1) + '. ' + date + ' | ' + raw.kind + ' | ' + formatTime(Math.ceil(timeLeftAtRaw(raw, raw.tag) / 1000) * 1000) + ' left | ' + raw.game.slice(0, 8);
     li.addEventListener('click', () => { playing = true; playPauseButton.textContent = 'Pause'; showClip(index); });
     clipList.appendChild(li);
   });

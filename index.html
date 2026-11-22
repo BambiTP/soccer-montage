@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Eggball montage</title>
+<style>
+  html, body { height: 100%; margin: 0; }
+  body { font-family: sans-serif; display: flex; flex-direction: column; padding: 6px; box-sizing: border-box; }
+  #montage-title { margin: 0 0 4px 0; font-size: 18px; }
+  #montage-explanation { margin: 0 0 6px 0; font-size: 13px; }
+  #montage-main { flex: 1; min-height: 0; display: flex; gap: 6px; }
+  #map-canvas-holder { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  #map-canvas { flex: none; width: 100%; height: auto; aspect-ratio: 64 / 22; max-height: 75vh; display: block; background: #444; border: 1px solid black; box-sizing: border-box; }
+  #clip-caption { font-size: 14px; padding: 4px 0; }
+  #clip-list-holder { width: 330px; overflow-y: auto; border: 1px solid #888; }
+  #clip-list { margin: 0; padding: 0; list-style: none; font-size: 12px; }
+  #clip-list li { padding: 3px 6px; cursor: pointer; border-bottom: 1px solid #ddd; }
+  #clip-list li.current-clip { background: #ffe9a8; font-weight: bold; }
+  fieldset { margin: 4px 0 0 0; padding: 4px 8px; }
+</style>
+</head>
+<body>
+<h1 id="montage-title">Loading...</h1>
+<p id="montage-explanation"></p>
+<div id="montage-main">
+  <div id="map-canvas-holder">
+    <canvas id="map-canvas"></canvas>
+    <div id="clip-caption"></div>
+    <fieldset id="controls-fieldset">
+      <button id="previous-clip-button">&laquo; Previous</button>
+      <button id="play-pause-button">Pause</button>
+      <button id="next-clip-button">Next &raquo;</button>
+      <button id="restart-clip-button">Restart clip</button>
+      <label><input type="checkbox" id="play-all-checkbox" checked> Play all (go to the next clip by itself)</label>
+      <label for="speed-select">Speed:</label>
+      <select id="speed-select">
+        <option value="0.25">0.25x</option>
+        <option value="0.5">0.5x</option>
+        <option value="1" selected>1x</option>
+        <option value="2">2x</option>
+      </select>
+      <label for="view-select">View:</label>
+      <select id="view-select">
+        <option value="map" selected>Whole map</option>
+        <option value="player">Follow the player</option>
+        <option value="egg">Follow the egg</option>
+      </select>
+      <label for="kind-select">Show:</label>
+      <select id="kind-select"></select>
+    </fieldset>
+  </div>
+  <div id="clip-list-holder"><ol id="clip-list"></ol></div>
+</div>
+<script src="montage.js"></script>
+</body>
+</html>
